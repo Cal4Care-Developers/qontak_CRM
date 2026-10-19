@@ -1,0 +1,3 @@
+# Add to root's crontab (crontab -e) or app/tasks/tasks.txt
+* * * * * /usr/bin/php /var/www/ringq/app/cli.php qontak sync
+15 3 * * * /usr/bin/php /var/www/ringq/app/cli.php qontak prune

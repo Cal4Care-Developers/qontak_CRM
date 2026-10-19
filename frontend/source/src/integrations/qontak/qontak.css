@@ -1,0 +1,183 @@
+/* Qontak CRM in-call popup. All classes are `qk-` prefixed so nothing here
+   can leak into the dialer or other pages. Dark is the default theme; the
+   app toggles `body.light-mode` (App.jsx). The popup is small, non-modal and
+   can be minimized or closed, so it never covers the call controls. */
+
+.qk-popup {
+  --qk-bg: #1e274a;
+  --qk-surface: rgba(255, 255, 255, 0.05);
+  --qk-border: rgba(183, 191, 238, 0.18);
+  --qk-text: #fafafa;
+  --qk-muted: #b7bfee;
+  --qk-accent: #1b9dd9;
+  --qk-danger: #ef4444;
+  --qk-ok: #22c55e;
+  --qk-warn: #f9a825;
+
+  /* Rendered on <body> (portal) and placed LEFT of the dialer panel
+     (App.css .dialer-overlay: right 25px, width 320px, z-index 200) so the
+     two never overlap; the high z-index keeps it above call overlays. */
+  position: fixed;
+  top: 84px;
+  right: 360px;
+  z-index: 10050;
+  width: min(340px, calc(100vw - 32px));
+  max-height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--qk-border);
+  border-radius: 14px;
+  background: var(--qk-bg);
+  color: var(--qk-text);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+  font-size: 13px;
+  line-height: 1.45;
+  animation: qkIn 0.18s ease-out both;
+}
+
+body.light-mode .qk-popup {
+  --qk-bg: #ffffff;
+  --qk-surface: #f4f6fd;
+  --qk-border: #dfe3f5;
+  --qk-text: #101a38;
+  --qk-muted: #525e79;
+}
+
+@keyframes qkIn { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+.qk-head { display: flex; align-items: center; gap: 10px; padding: 12px 12px 10px 14px; border-bottom: 1px solid var(--qk-border); }
+.qk-popup.is-min .qk-head { border-bottom: none; }
+.qk-mark {
+  flex: none; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px;
+  background: #0f62fe; color: #fff; font-weight: 700; font-size: 15px;
+}
+.qk-head-text { flex: 1; min-width: 0; }
+.qk-title { font-weight: 600; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.qk-sub { display: flex; align-items: center; gap: 6px; color: var(--qk-muted); font-size: 12px; }
+.qk-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--qk-muted); }
+.qk-dot-ringing { background: var(--qk-warn); }
+.qk-dot-active { background: var(--qk-ok); }
+.qk-icon {
+  display: grid; place-items: center; width: 28px; height: 28px; border: none; border-radius: 6px;
+  background: transparent; color: var(--qk-muted); cursor: pointer;
+}
+.qk-icon:hover { background: var(--qk-surface); color: var(--qk-text); }
+
+.qk-body { display: flex; flex-direction: column; gap: 12px; padding: 12px 14px 14px; overflow-y: auto; }
+.qk-muted { color: var(--qk-muted); }
+.qk-small { font-size: 12px; }
+
+.qk-skel { display: flex; flex-direction: column; gap: 8px; }
+.qk-skel span { height: 12px; border-radius: 6px; background: var(--qk-surface); animation: qkPulse 1.2s ease-in-out infinite; }
+.qk-skel span:nth-child(1) { width: 60%; height: 16px; }
+.qk-skel span:nth-child(3) { width: 45%; }
+@keyframes qkPulse { 50% { opacity: 0.45; } }
+
+.qk-state { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--qk-danger); }
+.qk-state span { flex: 1; min-width: 160px; }
+.qk-state-col { display: flex; flex-direction: column; gap: 8px; align-items: flex-start; }
+
+.qk-contact { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; background: var(--qk-surface); }
+.qk-contact-name { font-weight: 600; font-size: 14px; }
+.qk-facts { list-style: none; display: flex; flex-direction: column; gap: 3px; margin: 4px 0; }
+.qk-facts li { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.qk-facts li span, .qk-facts li a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.qk-facts svg { flex: none; color: var(--qk-muted); }
+.qk-facts a, .qk-link { color: var(--qk-accent); text-decoration: none; }
+.qk-link { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; margin-top: 2px; }
+.qk-link:hover, .qk-facts a:hover { text-decoration: underline; }
+
+.qk-matches { list-style: none; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.qk-match {
+  display: flex; flex-direction: column; align-items: flex-start; width: 100%; padding: 8px 10px; text-align: left;
+  border: 1px solid var(--qk-border); border-radius: 8px; background: transparent; color: inherit; cursor: pointer;
+}
+.qk-match:hover { border-color: var(--qk-accent); }
+.qk-match-name { font-weight: 600; }
+
+.qk-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 12px; margin: 0; }
+.qk-meta dt { color: var(--qk-muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; }
+.qk-meta dd { margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.qk-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 6px 10px;
+  border: 1px solid var(--qk-border); border-radius: 8px; background: transparent; color: var(--qk-text);
+  font: inherit; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.qk-btn:hover:not(:disabled) { border-color: var(--qk-accent); }
+.qk-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+.qk-btn-primary { background: var(--qk-accent); border-color: var(--qk-accent); color: #fff; }
+
+.qk-create { display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.qk-create-row { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.qk-input {
+  width: 100%; padding: 7px 9px; border: 1px solid var(--qk-border); border-radius: 8px;
+  background: var(--qk-surface); color: var(--qk-text); font: inherit; font-size: 13px;
+}
+.qk-input:focus { outline: 2px solid var(--qk-accent); outline-offset: -1px; }
+.qk-input[readonly] { opacity: 0.7; }
+.qk-error { color: var(--qk-danger); font-size: 12px; }
+
+.qk-journal { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid var(--qk-border); }
+.qk-journal-row { display: flex; align-items: center; justify-content: space-between; font-weight: 600; }
+.qk-journal-err { display: flex; align-items: center; gap: 8px; color: var(--qk-danger); }
+.qk-journal-err span { flex: 1; }
+.qk-pill { display: inline-block; padding: 1px 8px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--qk-surface); color: var(--qk-muted); }
+.qk-pill-synced, .qk-sent-positive { background: rgba(34, 197, 94, 0.16); color: var(--qk-ok); }
+.qk-pill-failed, .qk-sent-negative { background: rgba(239, 68, 68, 0.16); color: var(--qk-danger); }
+.qk-pill-pending { background: rgba(249, 168, 37, 0.16); color: var(--qk-warn); }
+.qk-ai-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.03em; color: var(--qk-muted); margin-bottom: 2px; }
+.qk-ai p { margin: 0; }
+.qk-ai-toggle { display: inline-flex; align-items: center; gap: 4px; padding: 0; border: none; background: none; color: var(--qk-accent); font: inherit; font-size: 12px; cursor: pointer; }
+.qk-rot { transform: rotate(180deg); }
+.qk-transcript { max-height: 160px; overflow-y: auto; margin-top: 4px !important; white-space: pre-wrap; font-size: 12px; color: var(--qk-muted); }
+
+.qk-spin { animation: qkSpin 0.9s linear infinite; }
+@keyframes qkSpin { to { transform: rotate(360deg); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .qk-popup, .qk-skel span, .qk-spin { animation: none; }
+}
+
+/* Not enough room beside the dialer: sit bottom-left instead. */
+@media (max-width: 1100px) {
+  .qk-popup { top: auto; right: auto; bottom: 16px; left: 16px; max-height: 55vh; }
+}
+@media (max-width: 600px) {
+  .qk-popup { right: 16px; width: auto; }
+}
+
+/* Settings dialog extras (rendered inside .integrations-page, reusing intg- classes) */
+.integrations-page .qk-settings-status { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 13px; }
+.integrations-page .qk-settings-status dt { opacity: 0.7; font-size: 12px; }
+.integrations-page .qk-settings-status dd { margin: 0; }
+.integrations-page .qk-settings-msg { display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 8px; font-size: 13px; }
+.integrations-page .qk-settings-msg.is-ok { background: rgba(34, 197, 94, 0.14); color: #22c55e; }
+.integrations-page .qk-settings-msg.is-err { background: rgba(239, 68, 68, 0.14); color: #ef4444; }
+.integrations-page .qk-logo-mark { display: grid; place-items: center; width: 100%; height: 100%; background: #0f62fe; color: #fff; font-weight: 700; font-size: 18px; border-radius: inherit; }
+.integrations-page select.qk-native-select { appearance: auto; cursor: pointer; }
+
+.qk-saved { display: flex; align-items: center; gap: 6px; color: var(--qk-ok); font-weight: 600; }
+
+/* Same panel rendered inside the separate call-details window (screen pop):
+   fills the window instead of floating over the RingQ app. */
+.qk-popup.qk-popup-inline {
+  position: static;
+  width: 100%;
+  max-height: none;
+  min-height: 100vh;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  animation: none;
+}
+@media (max-width: 1100px) {
+  .qk-popup.qk-popup-inline { position: static; width: 100%; }
+}
+.qk-window-body { margin: 0; background: #1e274a; }
+body.light-mode.qk-window-body { background: #ffffff; }
+
+.integrations-page .qk-footer-msg { display: inline-flex; align-items: center; gap: 6px; max-width: 360px; font-size: 12.5px; font-weight: 600; line-height: 1.3; }
+.integrations-page .qk-footer-msg.is-ok { color: #22c55e; }
+.integrations-page .qk-footer-msg.is-err { color: #ef4444; }

@@ -1,0 +1,7 @@
+// Add to app/config/services.php (ACL). Do not change any other line.
+
+// 1) In the $publicly array (role "nonregistered"):
+"qontak" => ["webhooks", "recording"],
+
+// 2) In the $privately array (role "registered"):
+"qontak" => ["config", "testConnection", "disconnect", "contactsSearch", "contacts", "callEvents", "callJournals", "recordingsSync", "aiAnalysis", "recording", "webhooks"],
